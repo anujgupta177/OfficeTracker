@@ -2,17 +2,17 @@ import streamlit as st
 import calendar
 from datetime import datetime
 
-def remove_holidays(working_days, holidays):
-    updated_working_days = [
-        day for day in working_days if day not in holidays
-    ]
+# def remove_holidays(working_days, holidays):
+#     updated_working_days = [
+#         day for day in working_days if day not in holidays
+#     ]
     
-    return updated_working_days
+#     return updated_working_days
     
-def get_working_days(year, month, holidays=None):
+def get_working_days(year, month, holidays):
 
-    if holidays is None:
-        holidays = []
+    # if holidays is None:
+    #     holidays = []
 
     total_days = calendar.monthrange(year, month)[1]
 
@@ -35,7 +35,7 @@ def get_working_days(year, month, holidays=None):
         else:
             non_working_days.append(int(date_str_date))  
             
-    updated_working_day = remove_holidays(working_days, holidays)    
+    updated_working_day = len(working_days) - holidays   
 
     return working_days, non_working_days, updated_working_day
 
@@ -69,14 +69,14 @@ def calculate_office_req(
     
     return {
         "Working Days" : total_working_days + holidays_len,
+        "Mandatory In-Office Days": mandatory_office_days,
         "Holidays" : holidays_len,
-        "Working days to attend office" : total_working_days,
+        "Total Working days to attend office" : total_working_days,
         "In - Office Days Done": office_days_done,
         "WFH Days": wfh_days,
-        "Leave Days": leave_days,
-        "Total Days completed for Office": completed_office_days + wfh_days,
-        "Remaining office days": remaining_office_days,
-        "Mandatory Office Days": mandatory_office_days,
+        "Leave Taken": leave_days,
+        "=> Total Days completed for Office": completed_office_days + wfh_days,
+        "Remaining Total - office days": remaining_office_days,
         "In-Office Days Completed" : completed_office_days,
         "Remaining In-Office Days to go": remaining_office_days_to_go
     }
@@ -84,7 +84,67 @@ def calculate_office_req(
 
 # --------------------------------
 
-st.title("Office Attendance Tracker")
+
+
+# -----------------------------------
+# PAGE CONFIG
+# -----------------------------------
+
+st.set_page_config(
+    page_title="Attendance Tracker",
+    page_icon="🏢",
+    layout="centered"
+)
+
+# -----------------------------------
+# CUSTOM CSS
+# -----------------------------------
+
+st.markdown("""
+<style>
+
+.main {
+    background-color: #f5f7fa;
+}
+
+.stButton>button {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    height: 3em;
+    width: 100%;
+    font-size: 18px;
+}
+
+.custom-card {
+    padding: 20px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# -----------------------------------
+# TITLE
+# -----------------------------------
+
+st.markdown("""
+<div class="custom-card">
+    <h1 style='text-align:center; color:#2E86C1;'>
+        🏢 Office Attendance Tracker
+    </h1>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+#------------------------------------#
+
+# st.title("Office Attendance Tracker")
+
 
 today = datetime.today()
 
@@ -124,16 +184,10 @@ leave_days = st.number_input(
     value = 0
 )
 
-holidays_input = st.text_input(
-    "Holidays (comma seperated)",
-    "1"
+holidays = st.number_input(
+    "Holidays Days",
+    value = 0
 )
-
-holidays = [
-    int(day.strip())
-    for day in holidays_input.split(",")
-    if day.strip()
-]
 
 
 if st.button("Calculate"):
@@ -151,22 +205,56 @@ if st.button("Calculate"):
     # st.write(non_working_days)
     
     result = calculate_office_req(
-        total_working_days=len(updated_working_days),
+        total_working_days=updated_working_days,
         office_days_done=office_days_done,
         wfh_days=wfh_days,
         leave_days=leave_days,
         mandatory_office_days=mandatory_office_days,
-        holidays_len=len(holidays)
+        holidays_len=holidays
     )
     
     st.subheader("Summary")
     
     for key, value in result.items():
-        if key not in ["Remaining office days", "Remaining office Days to go"]:
+        if key not in ["Remaining Total - office days", "Remaining In-Office Days to go"]:
             st.success(f"{key}  -> {value}")
         else:
             st.warning(f"{key}  -> {value}")
             
+            
+    completed = office_days_done + leave_days
+
+    remaining = mandatory_office_days - completed
+
+    if remaining < 0:
+        remaining = 0
+
+    progress = completed / mandatory_office_days
+
+    if progress > 1:
+        progress = 1.0
+
+    # -----------------------------------
+    # RESULTS
+    # -----------------------------------
+
+    st.markdown("## 📊 Attendance Summary")
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric("✅ Completed In-Office", completed)
+    c2.metric("📅 Remaining In-Office", remaining)
+    c3.metric("🗓️ Totla Working Days", len(working_days))
+    c4.metric("🗓️ Totla Working Days", completed+wfh_days)
+
+    st.progress(progress)
+
+    if remaining == 0:
+        st.success("🎉 In-Office attendance requirement completed!")
+    else:
+        st.warning(
+            f"⚠️ You need {remaining} more In-office days."
+        )
         
 #   return {
 #         "Total working Days" : total_working_days,
