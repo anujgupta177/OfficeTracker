@@ -245,8 +245,8 @@ if st.button("Calculate"):
     c1.metric("✅ In-Office Completed", completed)
     c2.metric("⏳ Remaining In-Office", remaining)
     c3.metric("🎯 Total Working Days", len(working_days)-holidays)
-    c4.metric("✅ Worked Days", completed+wfh_days)
-    c5.metric("⏳ Remaing Working Days", len(working_days)-(completed+wfh_days))
+    c4.metric("✅ Worked Days", completed+wfh_days-holidays)
+    c5.metric("⏳ Remaing Working Days", len(working_days)-(holidays+office_days_done+leave_days+wfh_days))
 
     st.progress(progress)
 
