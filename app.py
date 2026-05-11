@@ -64,7 +64,7 @@ def calculate_office_req(
 ):
     completed_office_days = office_days_done + leave_days
     remaining_office_days = total_working_days - completed_office_days - wfh_days
-    remaining_office_days_to_go = mandatory_office_days - completed_office_days
+    remaining_office_days_to_go = mandatory_office_days - completed_office_days - holidays_len
     
     
     return {
@@ -222,7 +222,7 @@ if st.button("Calculate"):
             st.warning(f"{key}  -> {value}")
             
             
-    completed = office_days_done + leave_days
+    completed = office_days_done + leave_days + holidays
 
     remaining = mandatory_office_days - completed
 
@@ -240,12 +240,13 @@ if st.button("Calculate"):
 
     st.markdown("## 📊 Attendance Summary")
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
 
-    c1.metric("✅ Completed In-Office", completed)
-    c2.metric("📅 Remaining In-Office", remaining)
-    c3.metric("🗓️ Totla Working Days", len(working_days))
-    c4.metric("🗓️ Totla Working Days", completed+wfh_days)
+    c1.metric("✅ In-Office Completed", completed)
+    c2.metric("⏳ Remaining In-Office", remaining)
+    c3.metric("🎯 Total Working Days", len(working_days)-holidays)
+    c4.metric("✅ Worked Days", completed+wfh_days)
+    c5.metric("⏳ Remaing Working Days", len(working_days)-(completed+wfh_days))
 
     st.progress(progress)
 
