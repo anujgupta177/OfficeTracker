@@ -147,47 +147,56 @@ st.markdown("""
 
 
 today = datetime.today()
+col1, col2, col3 = st.columns(3)
+col4, col5 = st.columns(2)
+col6, col7 = st.columns(2)
 
-# year = today.year
-year = st.number_input(
-    "Year",
-    value=today.year
-)
-# month = today.month
-month = st.number_input(
-    "Month",
-    min_value=1,
-    max_value=12,
-    value=today.month
-)
+with col1:
+    # year = today.year
+    year = st.number_input(
+        "Year",
+        value=today.year
+    )
+    
+with col2:
+    # month = today.month
+    month = st.number_input(
+        "Month",
+        min_value=1,
+        max_value=12,
+        value=today.month
+    )
 
-mandatory_office_days = st.number_input(
-    "Mandatory Office Days",
-    value = 16
-)
-
-
-
-office_days_done = st.number_input(
-    "Office Days Done",
-    value = 0
-)
-
-wfh_days = st.number_input(
-    "WFH Days",
-    value = 0
-)
+with col3:
+    mandatory_office_days = st.number_input(
+        "Mandatory Office Days",
+        value = 16
+    )
 
 
-leave_days = st.number_input(
-    "Leave Days",
-    value = 0
-)
+with col4:
+    office_days_done = st.number_input(
+        "Office Days Done",
+        value = 0
+    )
 
-holidays = st.number_input(
-    "Holidays Days",
-    value = 0
-)
+with col5:
+    wfh_days = st.number_input(
+        "WFH Days",
+        value = 0
+    )
+
+with col6:
+    leave_days = st.number_input(
+        "Leave Days",
+        value = 0
+    )
+
+with col7:
+    holidays = st.number_input(
+        "Holidays Days",
+        value = 0
+    )
 
 
 if st.button("Calculate"):
@@ -257,53 +266,3 @@ if st.button("Calculate"):
             f"⚠️ You need {remaining} more In-office days."
         )
         
-#   return {
-#         "Total working Days" : total_working_days,
-#         "Office Days Done": office_days_done,
-#         "WFH Days": wfh_days,
-#         "Leave Days": leave_days,
-#         "Total Days completed for office": completed_office_days + wfh_days,
-#         "Remaining office days": remaining_office_days,
-#         "Mandatory Office Days": mandatory_office_days,
-#         "Office Days Counted" : completed_office_days,
-#         "Remaining office Days to go": remaining_office_days_to_go
-#     }
-    
-    
-    # st.success(f"Completed Office Count: {completed}")
-    # st.warning(f"Remaining Office Days Needed: {remaining}")
-
-# working_days = get_working_days(year, month) 
-
-# st.write("Total Working Days:", len(working_days))
-
-# office_days = st.number_input(
-#     "Office Days",
-#     min_value=0,
-#     step=1
-# )
-
-# wfh_days = st.number_input(
-#     "WFH Days",
-#     min_value=0,
-#     step=1
-# )
-
-# leave_days = st.number_input(
-#     "Leave Days",
-#     min_value=0,
-#     step=1
-# )
-
-# required_office_days = 16
-
-# if st.button("Calculate"):
-
-#     completed, remaining = office_requirement_status(
-#         required_office_days,
-#         office_days,
-#         leave_days
-#     )
-
-#     st.success(f"Completed Office Count: {completed}")
-#     st.warning(f"Remaining Office Days Needed: {remaining}")
